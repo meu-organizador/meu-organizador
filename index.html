@@ -309,9 +309,8 @@
   </div>
 
   <script>
-    // Configurações reais conectadas ao seu projeto Supabase
     const SUPABASE_URL = "https://uupttiorztocboqkiprk.supabase.co"; 
-    const SUPABASE_ANON_KEY = "sb_publishable_ZInCtynve7lj8GYFv6AI9A_KCYf8";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1cHR0aW9yenRvY2JvcWtpcHJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNTcyNjEsImV4cCI6MjEwNTgzMzI2MX0.70m57BDcf5YIGildpyd_bWIIndJLlaf9viGeOtaEUv0";
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let tasks = [];
@@ -343,14 +342,14 @@
     // Login com verificação direta no Supabase
     async function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
+      const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
       const errBox = document.getElementById('loginError');
 
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       if (error) {
         errBox.style.display = 'block';
-        errBox.innerText = 'E-mail ou palavra-passe incorretos no Supabase.';
+        errBox.innerText = error.message || 'E-mail ou palavra-passe incorretos no Supabase.';
       } else {
         currentUser = data.user;
         showApp();
@@ -371,7 +370,6 @@
       renderCurrentView();
     }
 
-    // Carregamento direto da base de dados na nuvem
     async function loadData() {
       if (currentUser) {
         const { data: dbTasks } = await client.from('tarefas').select('*');
@@ -413,7 +411,6 @@
       }
     }
 
-    // Tela Hoje
     function renderToday() {
       const todayStr = getTodayStr();
       const todayObj = new Date();
@@ -496,7 +493,6 @@
       }
     }
 
-    // Tela Semana
     function changeWeek(direction) {
       currentWeekOffset += direction;
       renderWeek();
@@ -561,7 +557,6 @@
       }
     }
 
-    // Tela Mês
     function changeMonth(direction) {
       currentMonthDate.setMonth(currentMonthDate.getMonth() + direction);
       renderMonth();
@@ -655,7 +650,6 @@
       });
     }
 
-    // Histórico
     function filterHistory(f, btn) {
       currentHistoryFilter = f;
       document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
