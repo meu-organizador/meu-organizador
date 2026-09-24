@@ -96,6 +96,7 @@
     .tag-bubble.work { color: var(--work-tag); background: #e2e8f0; }
     .tag-bubble.personal { color: var(--personal-tag); background: #fce7f3; }
     .tag-date { color: #475569; background: #e2e8f0; font-weight: 700; }
+    .tag-recurrence { color: #0284c7; background: #e0f2fe; font-weight: 700; }
 
     .item-actions { display: flex; gap: 4px; }
     .btn-icon-soft { background: none; border: none; color: var(--text-subtle); width: 26px; height: 26px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
@@ -297,6 +298,20 @@
               <input type="time" id="inputTime" class="form-control" />
             </div>
           </div>
+
+          <!-- RECORRÊNCIA COMPLETA -->
+          <div class="form-group" id="grpRecurrence">
+            <label class="form-label">Repetição / Recorrência</label>
+            <select id="inputRecurrence" class="form-control">
+              <option value="none">Não se repete</option>
+              <option value="daily">Todos os dias</option>
+              <option value="weekdays">Dias úteis (Segunda a Sexta)</option>
+              <option value="weekends">Finais de semana (Sábado e Domingo)</option>
+              <option value="weekly">Semanal (uma vez por semana)</option>
+              <option value="monthly">Mensal (uma vez por mês)</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label class="form-label">Observação (opcional)</label>
             <textarea id="inputObservation" class="form-control" rows="2" placeholder="Detalhes adicionais..."></textarea>
@@ -337,6 +352,55 @@
       if (!dateStr) return '';
       const [y, m, d] = dateStr.split('-');
       return `${d}/${m}`;
+    }
+
+    function getRecurrenceLabel(rec) {
+      const map = {
+        'daily': '🔁 Todos os dias',
+        'weekdays': '🔁 Dias úteis (Seg-Sex)',
+        'weekends': '🔁 Finais de semana',
+        'weekly': '🔁 Semanal',
+        'monthly': '🔁 Mensal'
+      };
+      return map[rec] || '';
+    }
+
+    // Calcula a próxima data com base na regra de recorrência
+    function computeNextRecurrenceDate(currentDateStr, recurrence) {
+      const [year, month, day] = currentDateStr.split('-').map(Number);
+      let date = new Date(year, month - 1, day, 12, 0, 0);
+
+      if (recurrence === 'daily') {
+        date.setDate(date.getDate() + 1);
+      } else if (recurrence === 'weekdays') {
+        const dayOfWeek = date.getDay(); // 0=Dom, 1=Seg, ..., 5=Sex, 6=Sáb
+        if (dayOfWeek === 5) { // Sexta -> pula para Segunda
+          date.setDate(date.getDate() + 3);
+        } else if (dayOfWeek === 6) { // Sábado -> pula para Segunda
+          date.setDate(date.getDate() + 2);
+        } else {
+          date.setDate(date.getDate() + 1);
+        }
+      } else if (recurrence === 'weekends') {
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek === 6) { // Sábado -> Domingo
+          date.setDate(date.getDate() + 1);
+        } else if (dayOfWeek === 0) { // Domingo -> Próximo Sábado
+          date.setDate(date.getDate() + 6);
+        } else { // Meio de semana -> próximo Sábado
+          const diff = 6 - dayOfWeek;
+          date.setDate(date.getDate() + diff);
+        }
+      } else if (recurrence === 'weekly') {
+        date.setDate(date.getDate() + 7);
+      } else if (recurrence === 'monthly') {
+        date.setMonth(date.getMonth() + 1);
+      }
+
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
 
     // Login com verificação direta no Supabase
@@ -411,6 +475,44 @@
       }
     }
 
+    // Toggle de conclusão com criação automática da próxima ocorrência recorrente
+    async function toggleTask(id) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+
+      if (t.status === 'Concluído') {
+        t.status = 'A fazer';
+        t.data_de_conclusao = null;
+        await saveTask(t);
+      } else {
+        t.status = 'Concluído';
+        t.data_de_conclusao = new Date().toISOString();
+        await saveTask(t);
+
+        // Se tem recorrência definida, cria a próxima tarefa para a data futura
+        if (t.recorrencia && t.recorrencia !== 'none') {
+          const nextDate = computeNextRecurrenceDate(t.data, t.recorrencia);
+          const nextTask = {
+            id: 't_' + Date.now(),
+            atividade: t.atividade,
+            area: t.area,
+            prioridade: t.prioridade,
+            data: nextDate,
+            horario: t.horario || '',
+            observacao: t.observacao || '',
+            recorrencia: t.recorrencia,
+            status: 'A fazer',
+            data_de_conclusao: null,
+            criado_em: new Date().toISOString()
+          };
+          await saveTask(nextTask);
+        }
+      }
+
+      await loadData();
+      renderCurrentView();
+    }
+
     function renderToday() {
       const todayStr = getTodayStr();
       const todayObj = new Date();
@@ -427,7 +529,10 @@
             <div class="item-body">
               <div class="item-title">${r.titulo}</div>
               ${r.observacao ? `<div class="item-observation-box"><i class="fa-solid fa-note-sticky"></i> <span>${r.observacao}</span></div>` : ''}
-              <div class="item-tags"><span class="tag-date">📅 ${formatDateBR(r.data)}</span></div>
+              <div class="item-tags">
+                <span class="tag-date">📅 ${formatDateBR(r.data)}</span>
+                ${r.recorrencia && r.recorrencia !== 'none' ? `<span class="tag-bubble tag-recurrence">${getRecurrenceLabel(r.recorrencia)}</span>` : ''}
+              </div>
             </div>
             <div class="item-actions">
               <button class="btn-icon-soft" onclick="editReminder('${r.id}')">✏️</button>
@@ -449,6 +554,7 @@
       } else {
         pContainer.innerHTML = pending.map(t => {
           const isDelayed = t.data < todayStr;
+          const recLabel = getRecurrenceLabel(t.recorrencia);
           return `
             <div class="item-card ${isDelayed ? 'delayed' : ''}">
               <button class="check-btn" onclick="toggleTask('${t.id}')"></button>
@@ -460,6 +566,7 @@
                   <span class="tag-bubble tag-date">📅 ${formatDateBR(t.data)}</span>
                   <span class="tag-bubble ${t.area === 'Trabalho' ? 'work' : 'personal'}">${t.area === 'Trabalho' ? '🖤 Trabalho' : '🩷 Pessoal'}</span>
                   <span class="tag-bubble">${t.prioridade === 'Alta' ? '🔴 Alta' : t.prioridade === 'Média' ? '🟡 Média' : '🟢 Normal'}</span>
+                  ${recLabel ? `<span class="tag-bubble tag-recurrence">${recLabel}</span>` : ''}
                   ${t.horario ? `<span>⏰ ${t.horario}</span>` : ''}
                 </div>
               </div>
@@ -483,7 +590,10 @@
             <div class="item-body">
               <div class="item-title" style="text-decoration: line-through;">${t.atividade}</div>
               ${t.observacao ? `<div class="item-observation-box"><i class="fa-solid fa-note-sticky"></i> <span>${t.observacao}</span></div>` : ''}
-              <div class="item-tags"><span class="tag-bubble tag-date">📅 ${formatDateBR(t.data)}</span></div>
+              <div class="item-tags">
+                <span class="tag-bubble tag-date">📅 ${formatDateBR(t.data)}</span>
+                ${t.recorrencia && t.recorrencia !== 'none' ? `<span class="tag-bubble tag-recurrence">${getRecurrenceLabel(t.recorrencia)}</span>` : ''}
+              </div>
             </div>
             <div class="item-actions">
               <button class="btn-icon-soft" onclick="deleteTask('${t.id}')">🗑️</button>
@@ -546,7 +656,10 @@
                   <span style="${t.status === 'Concluído' ? 'text-decoration: line-through; opacity: 0.6;' : ''}">
                     ${t.status === 'Concluído' ? '✅' : '☐'} ${t.atividade}
                   </span>
-                  <span class="tag-bubble" style="font-size:10px;">${t.area === 'Trabalho' ? '🖤' : '🩷'}</span>
+                  <div style="display:flex; gap:4px; align-items:center;">
+                    ${t.recorrencia && t.recorrencia !== 'none' ? `<span style="font-size:10px;" title="${getRecurrenceLabel(t.recorrencia)}">🔁</span>` : ''}
+                    <span class="tag-bubble" style="font-size:10px;">${t.area === 'Trabalho' ? '🖤' : '🩷'}</span>
+                  </div>
                 </div>
                 ${t.observacao ? `<div style="font-size:11px; color:var(--text-muted); margin-top:2px; padding-left:18px;">📝 ${t.observacao}</div>` : ''}
               </div>
@@ -624,6 +737,7 @@
           <div class="item-body">
             <div class="item-title">${r.titulo}</div>
             ${r.observacao ? `<div class="item-observation-box"><i class="fa-solid fa-note-sticky"></i> <span>${r.observacao}</span></div>` : ''}
+            ${r.recorrencia && r.recorrencia !== 'none' ? `<div style="font-size:11px; color:#0284c7; margin-top:4px;">${getRecurrenceLabel(r.recorrencia)}</div>` : ''}
           </div>
         `;
         container.appendChild(d);
@@ -642,6 +756,7 @@
               <span class="tag-bubble tag-date">📅 ${formatDateBR(t.data)}</span>
               <span class="tag-bubble ${t.area === 'Trabalho' ? 'work' : 'personal'}">${t.area === 'Trabalho' ? '🖤 Trabalho' : '🩷 Pessoal'}</span>
               <span class="tag-bubble">${t.prioridade}</span>
+              ${t.recorrencia && t.recorrencia !== 'none' ? `<span class="tag-bubble tag-recurrence">${getRecurrenceLabel(t.recorrencia)}</span>` : ''}
               ${t.horario ? `<span>⏰ ${t.horario}</span>` : ''}
             </div>
           </div>
@@ -678,6 +793,7 @@
             <div class="item-tags">
               <span class="tag-bubble tag-date">Data original: ${formatDateBR(t.data)}</span>
               <span class="tag-bubble ${t.area === 'Trabalho' ? 'work' : 'personal'}">${t.area === 'Trabalho' ? '🖤' : '🩷'} ${t.area}</span>
+              ${t.recorrencia && t.recorrencia !== 'none' ? `<span class="tag-bubble tag-recurrence">${getRecurrenceLabel(t.recorrencia)}</span>` : ''}
             </div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">
               Concluída em: ${t.data_de_conclusao ? t.data_de_conclusao.replace('T', ' ').slice(0, 16) : '-'}
@@ -704,20 +820,6 @@
       else if (currentView === 'history') renderHistory();
     }
 
-    async function toggleTask(id) {
-      const t = tasks.find(x => x.id === id);
-      if (!t) return;
-      if (t.status === 'Concluído') {
-        t.status = 'A fazer';
-        t.data_de_conclusao = null;
-      } else {
-        t.status = 'Concluído';
-        t.data_de_conclusao = new Date().toISOString();
-      }
-      await saveTask(t);
-      renderCurrentView();
-    }
-
     function editTask(id) {
       const t = tasks.find(x => x.id === id);
       if (!t) return;
@@ -728,6 +830,7 @@
       document.getElementById('inputPriority').value = t.prioridade;
       document.getElementById('inputDate').value = t.data;
       document.getElementById('inputTime').value = t.horario || '';
+      document.getElementById('inputRecurrence').value = t.recorrencia || 'none';
       document.getElementById('inputObservation').value = t.observacao || '';
       document.getElementById('modalTitle').textContent = 'Editar Tarefa';
       toggleFormType();
@@ -743,6 +846,7 @@
       document.getElementById('inputArea').value = r.area;
       document.getElementById('inputDate').value = r.data;
       document.getElementById('inputTime').value = r.horario || '';
+      document.getElementById('inputRecurrence').value = r.recorrencia || 'none';
       document.getElementById('inputObservation').value = r.observacao || '';
       document.getElementById('modalTitle').textContent = 'Editar Lembrete';
       toggleFormType();
@@ -759,6 +863,7 @@
       e.preventDefault();
       const id = document.getElementById('itemId').value || ('id_' + Date.now());
       const type = document.getElementById('itemType').value;
+      const recurrence = document.getElementById('inputRecurrence').value;
 
       if (type === 'tarefa') {
         const existing = tasks.find(t => t.id === id);
@@ -769,6 +874,7 @@
           prioridade: document.getElementById('inputPriority').value,
           data: document.getElementById('inputDate').value,
           horario: document.getElementById('inputTime').value,
+          recorrencia: recurrence,
           observacao: document.getElementById('inputObservation').value,
           status: existing ? existing.status : 'A fazer',
           data_de_conclusao: existing ? existing.data_de_conclusao : null,
@@ -783,6 +889,7 @@
           area: document.getElementById('inputArea').value,
           data: document.getElementById('inputDate').value,
           horario: document.getElementById('inputTime').value,
+          recorrencia: recurrence,
           observacao: document.getElementById('inputObservation').value,
           criado_em: existing ? existing.criado_em : new Date().toISOString()
         };
@@ -799,12 +906,12 @@
         return;
       }
       let csv = "data:text/csv;charset=utf-8,\uFEFF";
-      csv += "Tipo;ID;Atividade/Titulo;Area;Data;Horario;Prioridade;Status;Observacao;Data Conclusao\n";
+      csv += "Tipo;ID;Atividade/Titulo;Area;Data;Horario;Prioridade;Recorrencia;Status;Observacao;Data Conclusao\n";
       tasks.forEach(t => {
-        csv += `Tarefa;"${t.id}";"${t.atividade}";"${t.area}";"${t.data}";"${t.horario || ''}";"${t.prioridade}";"${t.status}";"${t.observacao || ''}";"${t.data_de_conclusao || ''}"\n`;
+        csv += `Tarefa;"${t.id}";"${t.atividade}";"${t.area}";"${t.data}";"${t.horario || ''}";"${t.prioridade}";"${t.recorrencia || 'none'}";"${t.status}";"${t.observacao || ''}";"${t.data_de_conclusao || ''}"\n`;
       });
       reminders.forEach(r => {
-        csv += `Lembrete;"${r.id}";"${r.titulo}";"${r.area}";"${r.data}";"${r.horario || ''}";"-";"-";"${r.observacao || ''}";"-"\n`;
+        csv += `Lembrete;"${r.id}";"${r.titulo}";"${r.area}";"${r.data}";"${r.horario || ''}";"-";"${r.recorrencia || 'none'}";"-";"${r.observacao || ''}";"-"\n`;
       });
       const link = document.createElement("a");
       link.setAttribute("href", encodeURI(csv));
@@ -818,6 +925,7 @@
       document.getElementById('itemForm').reset();
       document.getElementById('itemId').value = '';
       document.getElementById('inputDate').value = getTodayStr();
+      document.getElementById('inputRecurrence').value = 'none';
       document.getElementById('modalTitle').textContent = 'Novo Item';
       toggleFormType();
       document.getElementById('modalSheet').classList.add('open');
