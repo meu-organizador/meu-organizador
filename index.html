@@ -25,7 +25,11 @@
       --border: #f1f1f5;
       --border-dark: #e2e8f0;
       --danger: #ef4444;
+      --danger-light: #fef2f2;
       --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --info: #0284c7;
+      --info-light: #f0f9ff;
       --success: #10b981;
       --work-tag: #334155;
       --personal-tag: #db2777;
@@ -36,7 +40,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
     body { background-color: #f1f3f5; color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; }
-    .app-shell { width: 100%; max-width: 440px; min-height: 100vh; background: var(--bg-app); display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); }
+    .app-shell { width: 100%; max-width: 460px; min-height: 100vh; background: var(--bg-app); display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); }
 
     /* Login */
     #loginView { padding: 40px 24px; display: flex; flex-direction: column; justify-content: center; height: 100vh; background: white; }
@@ -119,21 +123,42 @@
     .month-day-cell.selected { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid var(--primary); }
     .month-day-cell.has-task::after { content: ''; width: 4px; height: 4px; background: var(--primary); border-radius: 50%; position: absolute; bottom: 3px; }
 
-    .fab-btn { position: fixed; bottom: 74px; right: calc(50% - 200px); width: 54px; height: 54px; border-radius: 27px; background: var(--primary); color: #fff; border: none; box-shadow: 0 8px 20px rgba(244, 114, 182, 0.4); display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 35; }
-    @media (max-width: 440px) { .fab-btn { right: 18px; } }
+    /* ESTILOS DA EQUIPE */
+    .team-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
+    .team-metric-box { background: white; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 4px; text-align: center; }
+    .team-metric-val { font-size: 16px; font-weight: 800; }
+    .team-metric-label { font-size: 9.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
 
-    nav.bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 440px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 16px; z-index: 30; }
-    .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: var(--text-muted); font-size: 10.5px; font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 12px; }
+    .badge-falta { background: #fee2e2; color: #991b1b; }
+    .badge-atraso { background: #fef3c7; color: #92400e; }
+    .badge-saida { background: #e0f2fe; color: #0369a1; }
+    .badge-atestado { background: #dcfce7; color: #166534; }
+
+    .member-summary-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .member-summary-name { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    .member-summary-role { font-size: 11px; color: var(--text-muted); }
+    .member-summary-pills { display: flex; gap: 4px; font-size: 10px; font-weight: 700; }
+    .pill-count { padding: 2px 6px; border-radius: 6px; }
+
+    .sub-tabs-bar { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-dark); padding-bottom: 8px; }
+    .sub-tab-btn { background: none; border: none; font-size: 12px; font-weight: 700; color: var(--text-muted); padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+    .sub-tab-btn.active { background: var(--primary-light); color: var(--primary-dark); }
+
+    .fab-btn { position: fixed; bottom: 74px; right: calc(50% - 210px); width: 54px; height: 54px; border-radius: 27px; background: var(--primary); color: #fff; border: none; box-shadow: 0 8px 20px rgba(244, 114, 182, 0.4); display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 35; }
+    @media (max-width: 460px) { .fab-btn { right: 18px; } }
+
+    nav.bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 460px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 16px; z-index: 30; }
+    .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; color: var(--text-muted); font-size: 10px; font-weight: 600; cursor: pointer; padding: 5px 8px; border-radius: 10px; }
     .nav-tab.active { color: var(--primary-dark); background: var(--primary-light); }
 
     .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
     .modal-backdrop.open { display: flex; }
-    .modal-sheet { width: 100%; max-width: 440px; background: var(--surface); border-radius: 24px 24px 0 0; padding: 22px 20px 30px; max-height: 88vh; overflow-y: auto; }
+    .modal-sheet { width: 100%; max-width: 460px; background: var(--surface); border-radius: 24px 24px 0 0; padding: 22px 20px 30px; max-height: 88vh; overflow-y: auto; }
     .form-group { margin-bottom: 12px; }
     .form-label { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block; text-transform: uppercase; }
     .form-control { width: 100%; padding: 10px 12px; font-size: 14px; border: 1.5px solid var(--border-dark); border-radius: var(--radius-sm); outline: none; background: #fff; }
     .btn-submit { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
-    .empty-state { text-align: center; padding: 30px 16px; color: var(--text-muted); font-size: 13px; }
+    .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 13px; }
 
     .filter-pills { display: flex; gap: 6px; margin-bottom: 12px; }
     .filter-chip { padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; border: 1px solid var(--border-dark); background: white; color: var(--text-muted); cursor: pointer; }
@@ -175,7 +200,7 @@
         <div class="header-actions">
           <span id="headerDateText" class="greeting-text">Hoje</span>
           <button onclick="downloadMyData()" class="btn-export">
-            <i class="fa-solid fa-download"></i> Baixar Meus Dados
+            <i class="fa-solid fa-download"></i> Baixar Dados Gerais
           </button>
         </div>
       </header>
@@ -217,7 +242,63 @@
           <div id="monthDayItemsList"></div>
         </section>
 
-        <!-- 🏆 HISTÓRICO -->
+        <!-- 👥 EQUIPE: FALTAS, ATRASOS E RELATÓRIOS -->
+        <section id="view-team" class="view-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+            <div class="section-title" style="margin:0;"><span>👥</span> CONTROLE DE EQUIPE</div>
+            <button class="btn-export" onclick="openMemberModal()">+ Membro</button>
+          </div>
+
+          <div class="sub-tabs-bar">
+            <button class="sub-tab-btn active" id="tabBtnOcorrencias" onclick="switchTeamSubTab('ocorrencias')">Relatório Mensal</button>
+            <button class="sub-tab-btn" id="tabBtnMembros" onclick="switchTeamSubTab('membros')">Membros da Equipe</button>
+          </div>
+
+          <!-- RELATÓRIO DO MÊS -->
+          <div id="teamSubTabOcorrencias">
+            <div class="calendar-nav-bar">
+              <button onclick="changeTeamMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+              <span id="teamMonthLabel">Mês</span>
+              <button onclick="changeTeamMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <!-- MÉTRICAS DO MÊS -->
+            <div class="team-metric-grid">
+              <div class="team-metric-box">
+                <div class="team-metric-val" id="metricFaltas" style="color:var(--danger);">0</div>
+                <div class="team-metric-label">Faltas</div>
+              </div>
+              <div class="team-metric-box">
+                <div class="team-metric-val" id="metricAtrasos" style="color:#d97706;">0</div>
+                <div class="team-metric-label">Atrasos</div>
+              </div>
+              <div class="team-metric-box">
+                <div class="team-metric-val" id="metricSaidas" style="color:#0284c7;">0</div>
+                <div class="team-metric-label">Saídas</div>
+              </div>
+              <div class="team-metric-box">
+                <div class="team-metric-val" id="metricAtestados" style="color:var(--success);">0</div>
+                <div class="team-metric-label">Atestados</div>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span class="section-title" style="margin:0;">RESUMO POR COLABORADOR</span>
+              <button onclick="downloadTeamMonthCSV()" class="btn-export"><i class="fa-solid fa-file-excel"></i> Exportar Mês</button>
+            </div>
+            <div id="teamMemberSummaryList" style="margin-bottom: 16px;"></div>
+
+            <div class="section-title">HISTÓRICO DE OCORRÊNCIAS DO MÊS</div>
+            <div id="teamOccurrencesList"></div>
+          </div>
+
+          <!-- LISTA DE MEMBROS -->
+          <div id="teamSubTabMembros" style="display: none;">
+            <div id="teamMembersList"></div>
+          </div>
+        </section>
+
+        <!-- 🏆 HISTÓRICO GERAL -->
         <section id="view-history" class="view-container">
           <div class="section-title"><span>🏆</span> HISTÓRICO DE CONCLUSÃO</div>
           <div class="filter-pills">
@@ -229,7 +310,7 @@
         </section>
       </main>
 
-      <button class="fab-btn" onclick="openCreateModal()"><i class="fa-solid fa-plus"></i></button>
+      <button class="fab-btn" onclick="handleFabClick()"><i class="fa-solid fa-plus"></i></button>
 
       <nav class="bottom-nav">
         <button class="nav-tab active" onclick="switchView('today', this)">
@@ -244,6 +325,10 @@
           <i class="fa-regular fa-calendar"></i>
           <span>Mês</span>
         </button>
+        <button class="nav-tab" onclick="switchView('team', this)">
+          <i class="fa-solid fa-users"></i>
+          <span>Equipe</span>
+        </button>
         <button class="nav-tab" onclick="switchView('history', this)">
           <i class="fa-solid fa-trophy"></i>
           <span>Histórico</span>
@@ -251,7 +336,7 @@
       </nav>
     </div>
 
-    <!-- MODAL CADASTRO/EDIÇÃO -->
+    <!-- MODAL PRINCIPAL: TAREFAS/LEMBRETES -->
     <div id="modalSheet" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
       <div class="modal-sheet">
         <div style="display:flex; justify-content:space-between; margin-bottom:14px;">
@@ -299,7 +384,6 @@
             </div>
           </div>
 
-          <!-- RECORRÊNCIA COMPLETA -->
           <div class="form-group" id="grpRecurrence">
             <label class="form-label">Repetição / Recorrência</label>
             <select id="inputRecurrence" class="form-control">
@@ -321,6 +405,74 @@
       </div>
     </div>
 
+    <!-- MODAL MEMBRO -->
+    <div id="modalMember" class="modal-backdrop" onclick="closeMemberModalOnBackdrop(event)">
+      <div class="modal-sheet">
+        <div style="display:flex; justify-content:space-between; margin-bottom:14px;">
+          <h3 id="modalMemberTitle" style="font-size:16px;">Colaborador da Equipe</h3>
+          <button class="btn-icon-soft" onclick="closeMemberModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="memberForm" onsubmit="handleMemberSubmit(event)">
+          <input type="hidden" id="memberId" />
+          <div class="form-group">
+            <label class="form-label">Nome Completo</label>
+            <input type="text" id="inputMemberName" class="form-control" required placeholder="Ex: Ana Silva" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cargo / Função (opcional)</label>
+            <input type="text" id="inputMemberRole" class="form-control" placeholder="Ex: Escrevente, Atendente..." />
+          </div>
+          <button type="submit" class="btn-submit" id="btnSubmitMember">Salvar Colaborador</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL OCORRÊNCIA -->
+    <div id="modalOccurrence" class="modal-backdrop" onclick="closeOccurrenceModalOnBackdrop(event)">
+      <div class="modal-sheet">
+        <div style="display:flex; justify-content:space-between; margin-bottom:14px;">
+          <h3 id="modalOccurrenceTitle" style="font-size:16px;">Registrar Ocorrência</h3>
+          <button class="btn-icon-soft" onclick="closeOccurrenceModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="occurrenceForm" onsubmit="handleOccurrenceSubmit(event)">
+          <input type="hidden" id="occurrenceId" />
+          
+          <div class="form-group">
+            <label class="form-label">Colaborador</label>
+            <select id="inputOccMember" class="form-control" required></select>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">Tipo de Ocorrência</label>
+              <select id="inputOccType" class="form-control" onchange="updateOccTypeLabels()">
+                <option value="Falta">❌ Falta</option>
+                <option value="Atraso">⚠️ Atraso</option>
+                <option value="Saída Antecipada">🚪 Saída Antecipada</option>
+                <option value="Atestado">🩺 Atestado / Justificada</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">Data</label>
+              <input type="date" id="inputOccDate" class="form-control" required />
+            </div>
+          </div>
+
+          <div class="form-group" id="grpOccTime">
+            <label class="form-label" id="lblOccTime">Tempo / Horário</label>
+            <input type="text" id="inputOccTime" class="form-control" placeholder="Ex: 30 minutos ou 15:30" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Motivo / Observação</label>
+            <textarea id="inputOccReason" class="form-control" rows="2" placeholder="Ex: Problemas de transporte, consulta médica..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btnSubmitOcc">Salvar Ocorrência</button>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -330,12 +482,17 @@
 
     let tasks = [];
     let reminders = [];
+    let teamMembers = [];
+    let teamOccurrences = [];
+
     let currentUser = null;
     let currentWeekOffset = 0;
     let currentMonthDate = new Date();
+    let currentTeamMonthDate = new Date();
     let selectedCalendarDate = getTodayStr();
     let currentHistoryFilter = 'ALL';
     let currentView = 'today';
+    let currentTeamSubTab = 'ocorrencias';
 
     function getTodayStr() {
       const d = new Date();
@@ -365,7 +522,6 @@
       return map[rec] || '';
     }
 
-    // Calcula todas as datas dos próximos 60 dias de acordo com o padrão
     function generateRecurrenceDates(startDateStr, recurrence) {
       const dates = [startDateStr];
       if (!recurrence || recurrence === 'none') return dates;
@@ -373,7 +529,6 @@
       const [y, m, d] = startDateStr.split('-').map(Number);
       const start = new Date(y, m - 1, d, 12, 0, 0);
 
-      // Gera ocorrências para até 60 dias à frente
       if (recurrence === 'daily') {
         for (let i = 1; i <= 60; i++) {
           const next = new Date(start);
@@ -385,18 +540,14 @@
         for (let i = 1; i <= 60; i++) {
           cursor.setDate(cursor.getDate() + 1);
           const day = cursor.getDay();
-          if (day >= 1 && day <= 5) {
-            dates.push(formatDateObj(cursor));
-          }
+          if (day >= 1 && day <= 5) dates.push(formatDateObj(cursor));
         }
       } else if (recurrence === 'weekends') {
         let cursor = new Date(start);
         for (let i = 1; i <= 60; i++) {
           cursor.setDate(cursor.getDate() + 1);
           const day = cursor.getDay();
-          if (day === 0 || day === 6) {
-            dates.push(formatDateObj(cursor));
-          }
+          if (day === 0 || day === 6) dates.push(formatDateObj(cursor));
         }
       } else if (recurrence === 'weekly') {
         for (let i = 1; i <= 9; i++) {
@@ -411,7 +562,6 @@
           dates.push(formatDateObj(next));
         }
       }
-
       return dates;
     }
 
@@ -422,7 +572,6 @@
       return `${yr}-${mo}-${da}`;
     }
 
-    // Login com verificação direta no Supabase
     async function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -457,15 +606,18 @@
       if (currentUser) {
         const { data: dbTasks } = await client.from('tarefas').select('*');
         const { data: dbReminders } = await client.from('lembretes').select('*');
+        const { data: dbMembers } = await client.from('equipe').select('*').order('nome');
+        const { data: dbOccurrences } = await client.from('ocorrencias_equipe').select('*').order('data', { ascending: false });
+
         tasks = dbTasks || [];
         reminders = dbReminders || [];
+        teamMembers = dbMembers || [];
+        teamOccurrences = dbOccurrences || [];
       }
     }
 
     async function saveMultipleTasks(tasksArray) {
-      if (currentUser) {
-        await client.from('tarefas').upsert(tasksArray);
-      }
+      if (currentUser) await client.from('tarefas').upsert(tasksArray);
       tasksArray.forEach(task => {
         const idx = tasks.findIndex(t => t.id === task.id);
         if (idx >= 0) tasks[idx] = task; else tasks.push(task);
@@ -473,9 +625,7 @@
     }
 
     async function saveMultipleReminders(remArray) {
-      if (currentUser) {
-        await client.from('lembretes').upsert(remArray);
-      }
+      if (currentUser) await client.from('lembretes').upsert(remArray);
       remArray.forEach(rem => {
         const idx = reminders.findIndex(r => r.id === rem.id);
         if (idx >= 0) reminders[idx] = rem; else reminders.push(rem);
@@ -483,7 +633,7 @@
     }
 
     async function deleteTask(id) {
-      if (confirm('Deseja excluir esta ocorrência de tarefa?')) {
+      if (confirm('Deseja excluir esta tarefa?')) {
         if (currentUser) await client.from('tarefas').delete().eq('id', id);
         tasks = tasks.filter(t => t.id !== id);
         renderCurrentView();
@@ -498,11 +648,9 @@
       }
     }
 
-    // Toggle individual de conclusão de cada tarefa
     async function toggleTask(id) {
       const t = tasks.find(x => x.id === id);
       if (!t) return;
-
       if (t.status === 'Concluído') {
         t.status = 'A fazer';
         t.data_de_conclusao = null;
@@ -510,10 +658,7 @@
         t.status = 'Concluído';
         t.data_de_conclusao = new Date().toISOString();
       }
-
-      if (currentUser) {
-        await client.from('tarefas').upsert(t);
-      }
+      if (currentUser) await client.from('tarefas').upsert(t);
       renderCurrentView();
     }
 
@@ -596,7 +741,7 @@
               ${t.observacao ? `<div class="item-observation-box"><i class="fa-solid fa-note-sticky"></i> <span>${t.observacao}</span></div>` : ''}
               <div class="item-tags">
                 <span class="tag-bubble tag-date">📅 ${formatDateBR(t.data)}</span>
-                ${t.recorrencia && t.recorrencia !== 'none' ? `<span class="tag-bubble tag-recurrence">${getRecurrenceLabel(t.recorrencia)}</span>` : ''}
+                ${r_recorrencia = t.recorrencia && t.recorrencia !== 'none' ? `<span class="tag-bubble tag-recurrence">${getRecurrenceLabel(t.recorrencia)}</span>` : ''}
               </div>
             </div>
             <div class="item-actions">
@@ -769,6 +914,296 @@
       });
     }
 
+    // EQUIPE
+    function switchTeamSubTab(tab) {
+      currentTeamSubTab = tab;
+      document.getElementById('tabBtnOcorrencias').classList.toggle('active', tab === 'ocorrencias');
+      document.getElementById('tabBtnMembros').classList.toggle('active', tab === 'membros');
+      document.getElementById('teamSubTabOcorrencias').style.display = tab === 'ocorrencias' ? 'block' : 'none';
+      document.getElementById('teamSubTabMembros').style.display = tab === 'membros' ? 'block' : 'none';
+      renderTeamView();
+    }
+
+    function changeTeamMonth(direction) {
+      currentTeamMonthDate.setMonth(currentTeamMonthDate.getMonth() + direction);
+      renderTeamView();
+    }
+
+    function renderTeamView() {
+      if (currentTeamSubTab === 'membros') {
+        renderTeamMembersList();
+      } else {
+        renderTeamMonthReport();
+      }
+    }
+
+    function renderTeamMembersList() {
+      const container = document.getElementById('teamMembersList');
+      if (teamMembers.length === 0) {
+        container.innerHTML = '<div class="empty-state">Nenhum membro cadastrado na equipe. Clique no botão <b>+ Membro</b> acima para adicionar.</div>';
+        return;
+      }
+      container.innerHTML = teamMembers.map(m => `
+        <div class="item-card" style="align-items:center;">
+          <div class="item-body">
+            <div style="font-size:14px; font-weight:700;">👤 ${m.nome}</div>
+            <div style="font-size:12px; color:var(--text-muted);">${m.cargo || 'Membro da equipe'}</div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-icon-soft" onclick="editMember('${m.id}')">✏️</button>
+            <button class="btn-icon-soft" onclick="deleteMember('${m.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTeamMonthReport() {
+      const year = currentTeamMonthDate.getFullYear();
+      const month = currentTeamMonthDate.getMonth();
+      const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+
+      const monthName = currentTeamMonthDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      document.getElementById('teamMonthLabel').textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+      const monthOccurrences = teamOccurrences.filter(o => o.data && o.data.startsWith(monthPrefix));
+
+      const faltas = monthOccurrences.filter(o => o.tipo === 'Falta').length;
+      const atrasos = monthOccurrences.filter(o => o.tipo === 'Atraso').length;
+      const saidas = monthOccurrences.filter(o => o.tipo === 'Saída Antecipada').length;
+      const atestados = monthOccurrences.filter(o => o.tipo === 'Atestado').length;
+
+      document.getElementById('metricFaltas').textContent = faltas;
+      document.getElementById('metricAtrasos').textContent = atrasos;
+      document.getElementById('metricSaidas').textContent = saidas;
+      document.getElementById('metricAtestados').textContent = atestados;
+
+      const summaryContainer = document.getElementById('teamMemberSummaryList');
+      if (teamMembers.length === 0) {
+        summaryContainer.innerHTML = '<div class="empty-state">Cadastre sua equipe para gerar o relatório individual.</div>';
+      } else {
+        summaryContainer.innerHTML = teamMembers.map(m => {
+          const mOccs = monthOccurrences.filter(o => o.membro_id === m.id);
+          const fCount = mOccs.filter(o => o.tipo === 'Falta').length;
+          const aCount = mOccs.filter(o => o.tipo === 'Atraso').length;
+          const sCount = mOccs.filter(o => o.tipo === 'Saída Antecipada').length;
+          const atCount = mOccs.filter(o => o.tipo === 'Atestado').length;
+
+          return `
+            <div class="member-summary-card">
+              <div>
+                <div class="member-summary-name">${m.nome}</div>
+                <div class="member-summary-role">${m.cargo || 'Equipe'}</div>
+              </div>
+              <div class="member-summary-pills">
+                <span class="pill-count badge-falta" title="Faltas">❌ ${fCount}</span>
+                <span class="pill-count badge-atraso" title="Atrasos">⚠️ ${aCount}</span>
+                <span class="pill-count badge-saida" title="Saídas">🚪 ${sCount}</span>
+                <span class="pill-count badge-atestado" title="Atestados">🩺 ${atCount}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const listContainer = document.getElementById('teamOccurrencesList');
+      if (monthOccurrences.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">Nenhuma falta ou atraso registrado em ' + monthName + '. 🎉</div>';
+      } else {
+        listContainer.innerHTML = monthOccurrences.map(o => {
+          let badgeClass = 'badge-falta';
+          let icon = '❌';
+          if (o.tipo === 'Atraso') { badgeClass = 'badge-atraso'; icon = '⚠️'; }
+          else if (o.tipo === 'Saída Antecipada') { badgeClass = 'badge-saida'; icon = '🚪'; }
+          else if (o.tipo === 'Atestado') { badgeClass = 'badge-atestado'; icon = '🩺'; }
+
+          return `
+            <div class="item-card" style="border-left: 4px solid ${o.tipo === 'Falta' ? '#ef4444' : o.tipo === 'Atraso' ? '#f59e0b' : '#0284c7'};">
+              <div class="item-body">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <div>
+                    <span style="font-weight:700; font-size:13.5px;">${o.membro_nome}</span>
+                    <span class="tag-bubble ${badgeClass}" style="margin-left:6px; font-size:10px;">${icon} ${o.tipo}</span>
+                  </div>
+                  <span class="tag-bubble tag-date" style="font-size:11px;">📅 ${formatDateBR(o.data)}</span>
+                </div>
+                ${o.detalhe_tempo ? `<div style="font-size:12px; font-weight:600; color:var(--text-main); margin-top:4px;">⏱️ ${o.detalhe_tempo}</div>` : ''}
+                ${o.motivo ? `<div class="item-observation-box"><i class="fa-solid fa-comment-dots"></i> <span>${o.motivo}</span></div>` : ''}
+              </div>
+              <div class="item-actions">
+                <button class="btn-icon-soft" onclick="editOccurrence('${o.id}')">✏️</button>
+                <button class="btn-icon-soft" onclick="deleteOccurrence('${o.id}')">🗑️</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function downloadTeamMonthCSV() {
+      const year = currentTeamMonthDate.getFullYear();
+      const month = currentTeamMonthDate.getMonth();
+      const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+      const monthOccurrences = teamOccurrences.filter(o => o.data && o.data.startsWith(monthPrefix));
+
+      if (monthOccurrences.length === 0) {
+        alert("Nenhuma ocorrência registrada no mês selecionado para exportar.");
+        return;
+      }
+
+      let csv = "data:text/csv;charset=utf-8,\uFEFF";
+      csv += "Data;Colaborador;Tipo;Tempo/Horario;Motivo/Observacao\n";
+      monthOccurrences.forEach(o => {
+        csv += `"${formatDateBR(o.data)}";"${o.membro_nome}";"${o.tipo}";"${o.detalhe_tempo || ''}";"${o.motivo || ''}"\n`;
+      });
+
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(csv));
+      link.setAttribute("download", `relatorio_equipe_${monthPrefix}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function openMemberModal() {
+      document.getElementById('memberForm').reset();
+      document.getElementById('memberId').value = '';
+      document.getElementById('modalMemberTitle').textContent = 'Cadastrar Colaborador';
+      document.getElementById('modalMember').classList.add('open');
+    }
+    function closeMemberModal() { document.getElementById('modalMember').classList.remove('open'); }
+    function closeMemberModalOnBackdrop(e) { if (e.target.id === 'modalMember') closeMemberModal(); }
+
+    function editMember(id) {
+      const m = teamMembers.find(x => x.id === id);
+      if (!m) return;
+      document.getElementById('memberId').value = m.id;
+      document.getElementById('inputMemberName').value = m.nome;
+      document.getElementById('inputMemberRole').value = m.cargo || '';
+      document.getElementById('modalMemberTitle').textContent = 'Editar Colaborador';
+      document.getElementById('modalMember').classList.add('open');
+    }
+
+    async function handleMemberSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('memberId').value || ('m_' + Date.now());
+      const nome = document.getElementById('inputMemberName').value.trim();
+      const cargo = document.getElementById('inputMemberRole').value.trim();
+
+      const memberData = { id, nome, cargo, criado_em: new Date().toISOString() };
+      if (currentUser) await client.from('equipe').upsert(memberData);
+
+      const idx = teamMembers.findIndex(m => m.id === id);
+      if (idx >= 0) teamMembers[idx] = memberData; else teamMembers.push(memberData);
+
+      closeMemberModal();
+      renderTeamView();
+    }
+
+    async function deleteMember(id) {
+      if (confirm('Deseja remover este colaborador da equipe? (As ocorrências já salvas continuarão no histórico)')) {
+        if (currentUser) await client.from('equipe').delete().eq('id', id);
+        teamMembers = teamMembers.filter(m => m.id !== id);
+        renderTeamView();
+      }
+    }
+
+    function openOccurrenceModal() {
+      if (teamMembers.length === 0) {
+        alert("Por favor, cadastre primeiro ao menos um colaborador na equipe!");
+        openMemberModal();
+        return;
+      }
+      populateMemberSelect();
+      document.getElementById('occurrenceForm').reset();
+      document.getElementById('occurrenceId').value = '';
+      document.getElementById('inputOccDate').value = getTodayStr();
+      document.getElementById('modalOccurrenceTitle').textContent = 'Registrar Falta / Atraso';
+      updateOccTypeLabels();
+      document.getElementById('modalOccurrence').classList.add('open');
+    }
+    function closeOccurrenceModal() { document.getElementById('modalOccurrence').classList.remove('open'); }
+    function closeOccurrenceModalOnBackdrop(e) { if (e.target.id === 'modalOccurrence') closeOccurrenceModal(); }
+
+    function populateMemberSelect(selectedId = '') {
+      const select = document.getElementById('inputOccMember');
+      select.innerHTML = teamMembers.map(m => `
+        <option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${m.nome} (${m.cargo || 'Equipe'})</option>
+      `).join('');
+    }
+
+    function updateOccTypeLabels() {
+      const type = document.getElementById('inputOccType').value;
+      const lbl = document.getElementById('lblOccTime');
+      const input = document.getElementById('inputOccTime');
+      if (type === 'Atraso') {
+        lbl.textContent = 'Tempo de atraso';
+        input.placeholder = 'Ex: 25 minutos, chegou 09:30';
+      } else if (type === 'Saída Antecipada') {
+        lbl.textContent = 'Horário da saída';
+        input.placeholder = 'Ex: Saiu às 15:45';
+      } else {
+        lbl.textContent = 'Tempo / Período (opcional)';
+        input.placeholder = 'Ex: Dia todo, Turno da tarde';
+      }
+    }
+
+    function editOccurrence(id) {
+      const o = teamOccurrences.find(x => x.id === id);
+      if (!o) return;
+      populateMemberSelect(o.membro_id);
+      document.getElementById('occurrenceId').value = o.id;
+      document.getElementById('inputOccMember').value = o.membro_id;
+      document.getElementById('inputOccType').value = o.tipo;
+      document.getElementById('inputOccDate').value = o.data;
+      document.getElementById('inputOccTime').value = o.detalhe_tempo || '';
+      document.getElementById('inputOccReason').value = o.motivo || '';
+      document.getElementById('modalOccurrenceTitle').textContent = 'Editar Ocorrência';
+      updateOccTypeLabels();
+      document.getElementById('modalOccurrence').classList.add('open');
+    }
+
+    async function handleOccurrenceSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('occurrenceId').value || ('occ_' + Date.now());
+      const membroId = document.getElementById('inputOccMember').value;
+      const membro = teamMembers.find(m => m.id === membroId);
+
+      const occData = {
+        id,
+        membro_id: membroId,
+        membro_nome: membro ? membro.nome : 'Colaborador',
+        tipo: document.getElementById('inputOccType').value,
+        data: document.getElementById('inputOccDate').value,
+        detalhe_tempo: document.getElementById('inputOccTime').value,
+        motivo: document.getElementById('inputOccReason').value,
+        criado_em: new Date().toISOString()
+      };
+
+      if (currentUser) await client.from('ocorrencias_equipe').upsert(occData);
+
+      const idx = teamOccurrences.findIndex(o => o.id === id);
+      if (idx >= 0) teamOccurrences[idx] = occData; else teamOccurrences.unshift(occData);
+
+      closeOccurrenceModal();
+      renderTeamView();
+    }
+
+    async function deleteOccurrence(id) {
+      if (confirm('Deseja excluir este registro de ocorrência?')) {
+        if (currentUser) await client.from('ocorrencias_equipe').delete().eq('id', id);
+        teamOccurrences = teamOccurrences.filter(o => o.id !== id);
+        renderTeamView();
+      }
+    }
+
+    function handleFabClick() {
+      if (currentView === 'team') {
+        openOccurrenceModal();
+      } else {
+        openCreateModal();
+      }
+    }
+
     function filterHistory(f, btn) {
       currentHistoryFilter = f;
       document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
@@ -821,6 +1256,7 @@
       if (currentView === 'today') renderToday();
       else if (currentView === 'week') renderWeek();
       else if (currentView === 'month') renderMonth();
+      else if (currentView === 'team') renderTeamView();
       else if (currentView === 'history') renderHistory();
     }
 
@@ -863,7 +1299,6 @@
       document.getElementById('lblTitle').textContent = type === 'tarefa' ? 'Atividade' : 'Título do Lembrete';
     }
 
-    // Salva e multiplica automaticamente no Supabase
     async function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitForm');
@@ -876,7 +1311,6 @@
       const baseDate = document.getElementById('inputDate').value;
       const nowIso = new Date().toISOString();
 
-      // Se for edição de item já existente, atualiza apenas ele
       if (editingId) {
         if (type === 'tarefa') {
           const existing = tasks.find(t => t.id === editingId);
@@ -909,10 +1343,7 @@
           await saveMultipleReminders([remData]);
         }
       } else {
-        // Novo item: gera todas as ocorrências automaticamente de acordo com o calendário
         const occurrenceDates = generateRecurrenceDates(baseDate, recurrence);
-        const batchGroupId = 'grp_' + Date.now();
-
         if (type === 'tarefa') {
           const newTasks = occurrenceDates.map((dStr, idx) => ({
             id: `t_${Date.now()}_${idx}`,
